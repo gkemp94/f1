@@ -20,4 +20,4 @@ app.register(async function (fastify) {
   });
 });
 
-app.listen({ port: 8080 });
+app.listen({ port: 80 });
