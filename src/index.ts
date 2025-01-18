@@ -16,7 +16,7 @@ app.register(async function (fastify) {
   });
 
   fastify.get("/health", () => {
-    return { status: "ok" };
+    return { status: "ok2" };
   });
 });
 
