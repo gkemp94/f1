@@ -1,4 +1,8 @@
 import { Client } from "pg";
+import dotenv from "dotenv";
+import chroma from "chroma-js";
+
+dotenv.config();
 
 export type Data = {
   target_date: number;
@@ -51,6 +55,7 @@ export class Session {
   private readonly limit = 200;
   private subscribers: Subscriber[] = [];
   private isLoading = false;
+  private isComplete = false;
 
   private maxLoadedT = "2024-07-07T14:00:00.000Z";
   private client = new Client({ connectionString: DB_URL });
@@ -77,7 +82,7 @@ export class Session {
       [this.sessionKey]
     );
     this.driverColorsById = rows.reduce((acc, row) => {
-      acc[row.driver_number] = `#${row.team_color}`;
+      acc[row.driver_number] = chroma(`#${row.team_color}`).rgb().concat(0);
       return acc;
     }, {});
   }
@@ -87,18 +92,35 @@ export class Session {
     const nextTs = new Date(next[0].target_date).getTime();
     const delay = (nextTs - this.sessiont0) / 2 - (Date.now() - this.t0);
 
-    if (this.data.length < this.limit / 2 && !this.isLoading) {
+    if (this.data.length < this.limit / 2 && !this.isLoading && !this.isComplete) {
       void this.load();
     }
     setTimeout(() => {
       this.subscribers.forEach((cb) => cb(next));
-      if (this.data.length) this.emit();
+      if (this.data.length) {
+        this.emit();
+      } else {
+        this.restart();
+      }
     }, delay);
+  }
+
+  private async restart() {
+    this.maxLoadedT = "2024-07-07T14:00:00.000Z";
+    await this.load();
+    this.t0 = Date.now();
+    this.sessiont0 = new Date(this.data[0][0].target_date).getTime();
+    this.emit();
   }
 
   private async load(): Promise<void> {
     this.isLoading = true;
     const { rows } = await this.client.query(QUERY, [this.maxLoadedT, this.limit]);
+    if (!rows.length) {
+      this.isLoading = false;
+      this.isComplete = true;
+      return;
+    }
     this.maxLoadedT = rows[rows.length - 1].target_date;
 
     const groupedByDate = rows.reduce((acc, row) => {
