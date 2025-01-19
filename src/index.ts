@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import fastifyWebsocket from "@fastify/websocket";
 import { Data, Session } from "./models/Session";
+import debounce from "lodash/debounce";
 
 const app = Fastify({ logger: true });
 
@@ -11,9 +12,9 @@ const session = new Session();
 app.register(async function (fastify) {
   fastify.get("/pixels", { websocket: true }, (socket, req) => {
     const pixels = 150;
-    const DEFAULT = [0, 0, 0, 50] as readonly [number, number, number, number];
+    const DEFAULT = [0, 0, 0, 25] as readonly [number, number, number, number];
 
-    const onData = (data: Data) => {
+    const onData = debounce((data: Data) => {
       const payload = new Array(pixels).fill(DEFAULT);
       data
         .sort((a, b) => a.position - b.position)
@@ -30,7 +31,7 @@ app.register(async function (fastify) {
           }
         });
       socket.send(JSON.stringify(payload));
-    };
+    }, 1000 / 3);
 
     session.subscribe(onData);
 
