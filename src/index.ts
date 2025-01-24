@@ -11,7 +11,7 @@ const session = new Session();
 app.register(async function (fastify) {
   fastify.get("/pixels", { websocket: true }, (socket, req) => {
     const pixels = 300;
-    const DEFAULT = [0, 0, 0, 10] as readonly [number, number, number, number];
+    const DEFAULT = [0, 0, 0, 0] as readonly [number, number, number, number];
 
     const onData = (data: Data) => {
       const payload = new Array(pixels).fill(DEFAULT);
