@@ -100,6 +100,7 @@ export class Session {
       if (this.data.length) {
         this.emit();
       } else {
+        console.log(`Restarting`);
         this.restart();
       }
     }, delay);
