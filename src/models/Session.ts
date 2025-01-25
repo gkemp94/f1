@@ -90,7 +90,7 @@ export class Session {
   private emit() {
     const [next] = this.data.splice(0, 1);
     const nextTs = new Date(next[0].target_date).getTime();
-    const delay = (nextTs - this.sessiont0) / 1 - (Date.now() - this.t0);
+    const delay = (nextTs - this.sessiont0) / 2 - (Date.now() - this.t0);
 
     if (this.data.length < this.limit / 2 && !this.isLoading && !this.isComplete) {
       void this.load();
