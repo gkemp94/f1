@@ -100,7 +100,6 @@ export class Session {
       if (this.data.length) {
         this.emit();
       } else {
-        console.log(`Restarting`);
         this.restart();
       }
     }, delay);
@@ -108,6 +107,7 @@ export class Session {
 
   private async restart() {
     this.maxLoadedT = "2024-07-07T14:00:00.000Z";
+    this.isComplete = false;
     await this.load();
     this.t0 = Date.now();
     this.sessiont0 = new Date(this.data[0][0].target_date).getTime();
