@@ -12,6 +12,8 @@ export type Data = {
   position: number;
 }[];
 
+const HZ = 20;
+
 const DB_URL = process.env.DATABASE_URL;
 
 type Subscriber = (data: Data) => void;
@@ -64,6 +66,7 @@ export class Session {
   private t0 = 0;
   private sessiont0 = 0;
   private sessionKey = 9558;
+  private previous: Data | null = null;
 
   public async start() {
     // Connect
@@ -87,7 +90,7 @@ export class Session {
     }, {});
   }
 
-  private emit() {
+  private async emit() {
     const [next] = this.data.splice(0, 1);
     const nextTs = new Date(next[0].target_date).getTime();
     const delay = (nextTs - this.sessiont0) / 1 - (Date.now() - this.t0);
@@ -95,8 +98,31 @@ export class Session {
     if (this.data.length < this.limit / 2 && !this.isLoading && !this.isComplete) {
       void this.load();
     }
+
+    const int = setInterval(() => {
+      if (!this.previous) return;
+      // Percent Between Previous & Next
+      const diffBetweenTs = nextTs - new Date(this.previous[0].target_date).getTime();
+      const d = (nextTs - this.sessiont0) / 1 - (Date.now() - this.t0);
+      const percent = 1 - d / diffBetweenTs;
+      const data = this.previous.map((prev, i) => {
+        const nextData = next.find((n) => n.driver_number === prev.driver_number);
+        if (!nextData) return prev;
+        return {
+          target_date: nextData.target_date,
+          percentage: prev.percentage + (nextData.percentage - prev.percentage) * percent,
+          on_track: prev.on_track,
+          driver_number: prev.driver_number,
+          position: prev.position,
+        };
+      });
+      this.subscribers.forEach((cb) => cb(data));
+    }, 1000 / HZ);
+
     setTimeout(() => {
+      clearInterval(int);
       this.subscribers.forEach((cb) => cb(next));
+      this.previous = next;
       if (this.data.length) {
         this.emit();
       } else {
