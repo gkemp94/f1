@@ -110,7 +110,7 @@ export class Session {
         if (!nextData) return prev;
         return {
           target_date: nextData.target_date,
-          percentage: (prev.percentage + (nextData.percentage - prev.percentage) * percent) % 1,
+          percentage: (prev.percentage + (nextData.percentage - prev.percentage) * percent) % 100,
           on_track: prev.on_track,
           driver_number: prev.driver_number,
           position: prev.position,
