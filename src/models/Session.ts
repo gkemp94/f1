@@ -12,7 +12,7 @@ export type Data = {
   position: number;
 }[];
 
-const HZ = 1;
+const HZ = 30;
 
 const DB_URL = process.env.DATABASE_URL;
 
@@ -110,7 +110,7 @@ export class Session {
         if (!nextData) return prev;
         return {
           target_date: nextData.target_date,
-          percentage: prev.percentage + (nextData.percentage - prev.percentage) * percent,
+          percentage: (prev.percentage + (nextData.percentage - prev.percentage) * percent) % 1,
           on_track: prev.on_track,
           driver_number: prev.driver_number,
           position: prev.position,
