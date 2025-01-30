@@ -12,7 +12,7 @@ export type Data = {
   position: number;
 }[];
 
-const HZ = 20;
+const HZ = 1;
 
 const DB_URL = process.env.DATABASE_URL;
 
