@@ -108,9 +108,11 @@ export class Session {
       const data = this.previous.map((prev, i) => {
         const nextData = next.find((n) => n.driver_number === prev.driver_number);
         if (!nextData) return prev;
+        const nextDataPercentage =
+          nextData.percentage < prev.percentage ? nextData.percentage + 100 : nextData.percentage;
         return {
           target_date: nextData.target_date,
-          percentage: (prev.percentage + (nextData.percentage - prev.percentage) * percent) % 100,
+          percentage: prev.percentage + (nextDataPercentage - prev.percentage) * percent,
           on_track: prev.on_track,
           driver_number: prev.driver_number,
           position: prev.position,
