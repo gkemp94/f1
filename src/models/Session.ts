@@ -59,7 +59,7 @@ export class Session {
 
   private maxLoadedT = "2024-07-07T14:00:00.000Z";
   private client = new Client({ connectionString: DB_URL });
-  public driverColorsById: Record<string, string> = {};
+  public driverColorsById: Record<string, [number, number, number, number]> = {};
 
   private t0 = 0;
   private sessiont0 = 0;
