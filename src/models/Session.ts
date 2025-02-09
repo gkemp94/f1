@@ -29,6 +29,7 @@ const QUERY = `
   all_drivers AS (
       SELECT DISTINCT driver_number 
       FROM car_data
+      WHERE session_key = $3
   ),
   combos AS (
       SELECT d.driver_number, t.date AS target_date
@@ -44,7 +45,8 @@ const QUERY = `
   LEFT JOIN LATERAL (
       SELECT td.*
       FROM car_data td
-      WHERE td.driver_number = combos.driver_number
+      WHERE td.session_key = $3
+        AND td.driver_number = combos.driver_number
         AND td.date <= combos.target_date
       ORDER BY td.date DESC
       LIMIT 1
@@ -150,7 +152,7 @@ export class Session {
   private async load(): Promise<void> {
     this.isLoading = true;
     const t0 = performance.now();
-    const { rows } = await this.client.query(QUERY, [this.maxLoadedT, this.limit]);
+    const { rows } = await this.client.query(QUERY, [this.maxLoadedT, this.limit, this.sessionKey]);
     if (!rows.length) {
       this.isLoading = false;
       this.isComplete = true;
