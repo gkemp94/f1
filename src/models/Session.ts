@@ -149,6 +149,7 @@ export class Session {
 
   private async load(): Promise<void> {
     this.isLoading = true;
+    const t0 = performance.now();
     const { rows } = await this.client.query(QUERY, [this.maxLoadedT, this.limit]);
     if (!rows.length) {
       this.isLoading = false;
@@ -164,8 +165,8 @@ export class Session {
     }, {});
 
     this.data = this.data.concat(Object.values(groupedByDate));
-    console.log("Loaded", this.data.length, "rows");
     this.isLoading = false;
+    console.log("Loaded", this.data.length, "in", performance.now() - t0, "ms");
   }
 
   public subscribe(callback: Subscriber): void {
