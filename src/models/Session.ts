@@ -61,13 +61,13 @@ export class Session {
   private isLoading = false;
   private isComplete = false;
 
-  private maxLoadedT = "2024-07-07T14:00:00.000Z";
+  private maxLoadedT = "2023-07-09T14:00:00.000Z";
   private client = new Client({ connectionString: DB_URL });
   public driverColorsById: Record<string, [number, number, number, number]> = {};
 
   private t0 = 0;
   private sessiont0 = 0;
-  private sessionKey = 9558;
+  private sessionKey = 9126;
   private previous: Data | null = null;
 
   public async start() {
