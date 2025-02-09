@@ -61,12 +61,12 @@ class Session {
         this.subscribers = [];
         this.isLoading = false;
         this.isComplete = false;
-        this.maxLoadedT = "2023-07-09T14:00:00.000Z";
+        this.maxLoadedT = "2024-07-07T14:00:00.000Z";
         this.client = new pg_1.Client({ connectionString: DB_URL });
         this.driverColorsById = {};
         this.t0 = 0;
         this.sessiont0 = 0;
-        this.sessionKey = 9126;
+        this.sessionKey = 9558;
         this.previous = null;
     }
     start() {
